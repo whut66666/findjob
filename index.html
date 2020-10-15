@@ -1,147 +1,46 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
-
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Find Jobs App by WordCloud">
-    <meta name="theme-color" content="#fff" />
-
-    <title>Find Jobs App</title>
-</head>
-<style>
-    * {
-        padding: 0;
-        margin: 0;
-        text-align: center;
-    }
-
-    html,
-    body {
-        width: 100%;
-        height: 100%;
-    }
-
-    h1,
-    h2,
-    h3,
-    h4,
-    h5 {
-        text-align: center;
-    }
-
-    h1 {
-        margin: 8px;
-    }
-
-    h2 {
-        margin: 5px auto;
-    }
-
-    button {
-        display: block;
-        min-width: 150px;
-        min-height: 40px;
-        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-        cursor: pointer;
-        outline: none;
-        border: 1px solid black;
-        background-color: #fff;
-        color: #212121;
-        transition: 1s;
-        margin: 2% auto auto;
-    }
-
-    button:hover {
-        transform: scale(1.1);
-    }
-
-    select {
-        min-width: 150px;
-        min-height: 40px;
-    }
-
-    select option {
-        text-align: center;
-    }
-
-    a {
-        text-decoration: none;
-        color: black;
-    }
-
-    footer {
-        width: 100%;
-        position: flex;
-        bottom: 0;
-    }
-
-    #wordCloud {
-        width: 100%;
-        align-items: center;
-    }
-
-    @media screen and (max-width:960px) {
-        #wordCloud img {
-            width: 100%;
-        }
-    }
-</style>
-
-<body>
-    <header>
-        <h1>Find Jobs App</h1>
-    </header>
-    <h2>职位</h2>
-    <select name="job" id="select-job" size=3></select>
-    <h2>城市</h2>
-    <select name="city" id="select-city" size=3></select>
-
-    <button id="btnWC" onclick="loadWordCloud()">生成云图</button autofocus>
-    <div id="wordCloud">
-    </div>
-    <footer>
-        <p>数据来源 - 猎聘网 - 2020-10-7</p>
-        <p><a>Copyright @ 2020 Ljc</a></p>
-    </footer>
-</body>
-<script>
-    var jobs = ['数据挖掘', '图像算法工程师', 'java后端', '互联网产品经理'];
-    var citys = ['北京', '上海', '深圳', '广州', '武汉', '杭州'];
-
-    function init() {
-
-        var selectJobs = document.getElementById('select-job');
-        var selectCity = document.getElementById('select-city');
-        selectCity.innerHTML = ''
-        selectJobs.innerHTML = ''
-
-        for (i in jobs) {
-            if (i != 0) {
-                selectJobs.innerHTML = selectJobs.innerHTML + '<option value="' + jobs[i] + '">' + jobs[i] + '</option>'
-                selectCity.innerHTML = selectCity.innerHTML + '<option value="' + citys[i] + '">' + citys[i] + '</option>'
-            } else {
-                selectJobs.innerHTML = selectJobs.innerHTML + '<option value="' + jobs[i] + '">' + jobs[i] + '</option>'
-                selectCity.innerHTML = selectCity.innerHTML + '<option value="' + citys[i] + '">' + citys[i] + '</option>'
+    <style>
+            *{
+                text-align: center;
+                width: 300px;
+                margin:0 auto;
             }
-        }
-
-        selectJobs.selectedIndex = 0;
-        selectCity.selectedIndex = 0;
-    }
-
-    function loadWordCloud() {
-        var divCloud = document.getElementById('wordCloud');
-        var btnSelectJob = document.getElementById('select-job');
-        var btnSelectCity = document.getElementById('select-city');
-
-        var jobIndex = btnSelectJob.selectedIndex;
-        var cityIndex = btnSelectCity.selectedIndex;
-
-        divCloud.innerHTML = '<img src="./nephogram+jobs[jobIndex]+citys[cityIndex]+".jpg">'
-    }
-
-    init()
-</script>
-
+    </style>
+    <meta charset="UTF-8">
+    <title>FindJobs</title>
+</head>
+<body>
+    <h1><b>FindJobs</b></h1><br /><br />
+    <div style="color: #1da1f2">
+    职业：
+    <select>
+        <option>数据挖掘</option>
+        <option>java后端</option>
+        <option>图像</option>
+        <option>数据分析</option>
+        <option selected="selected">请选择职业</option>
+    </select>
+    <br /><br />
+    城市：
+    <select>
+        <option>北京</option>
+        <option>上海</option>
+        <option>天津</option>
+        <option>武汉</option>
+        <option selected="selected">请选择城市</option>
+    </select>
+    </div>
+    <br /><br />
+    <input type="button" value="生成云图">
+    <div>
+        <span>
+            <img src="数据挖掘北京.jpg" alt="数据挖掘北京.jpg" title="数据挖掘北京.jpg">
+        </span>
+        <span>
+            <img src="数据挖掘广州.jpg" alt="数据挖掘广州.jpg" title="数据挖掘广州.jpg">
+        </span>
+    </div>
+</body>
 </html>
