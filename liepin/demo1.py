@@ -1,8 +1,9 @@
-# -*- codeing = utf-8 -*-
-# @Time :  2020/9/27 17:41
+# -*- coding = utf-8 -*-
+# @Time : 2020/10/21 19:13
 # @Author : LiJunChao
-# @File : demo1.py
+# @File : test.py
 # @SoftWare : PyCharm
+
 
 import time
 import jieba
@@ -23,26 +24,29 @@ def main():
             'Java%E5%90%8E%E7%AB%AF',
             '%E4%BA%92%E8%81%94%E7%BD%91%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86'] #不同职业
     citys = ['北京', '上海', '深圳', '广州', '武汉', '杭州']
+    job = ['数据挖掘', '图像算法工程师', 'java后端', '互联网产品经理']
     cityIds = ['010', '020', '050090', '050020', '170020', '070020']
-    zhaopin = []    #存储招聘信息的网址
-    # require = []
-    filepath = "zhaopin.txt"
-    zhaopin = getData(url,zhaopin,filepath,citys,jobs,cityIds)  #信息筛选
-    # saveData(zhaopin,filepath)      #保存信息
-    # require = findask(zhaopin,require)                #寻找招聘要求
-    # clean(require)          #清洗数据
-    # creatwordcloud()            #生成词云
 
+    geturls(url,jobs,cityIds,citys,job)
 
 joblink = re.compile(r'" href="(.*)" target="_blank">')   #匹配链接的正则表达式
 asklink = re.compile('<div class="content content-word">[\s\S]*?(?<=任职资格|任职要求)[:：]?([\s\S]*?)(?<=<br/>)?</div>')
 
+def geturls(url,jobs,cityIds,citys,job):
+    for k in range(1,2):#0-4表示不同的职业
+        for j in range(0,1):    #表示不同地区的网址0-6
+            urls = url + 'key=' + jobs[k] + '&dqs=' + cityIds[j]
+            getData(urls,job[k],citys[j])
+
 def askurl(urls):
     try:
         head = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36"
+            #"User-Agent": "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Win64; x64; Trident/5.0; .NET CLR 2.0.50727; SLCC2; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; InfoPath.3; .NET4.0C; Tablet PC 2.0; .NET4.0E)"
+            #"User-Agent": "SafariWin7:Mozilla / 5.0(WindowsNT6.1;WOW64) AppleWebKit / 534.50(KHTML, likeGecko) Version / 5.1Safari / 534.50"
+            "User-Agent":"Mozilla / 5.0(WindowsNT6.1;WOW64) AppleWebKit / 535.1(KHTML, likeGecko) Chrome / 14.0.835.163Safari / 535.1"
         }
         urls = urllib.request.Request(urls,headers=head)
+        #urls = urllib.request.Request(urls)
         request = urllib.request.urlopen(urls)
         html = request.read().decode("utf-8")
     except urllib.error.URLError as e:
@@ -50,52 +54,52 @@ def askurl(urls):
             print(e.code)
         if hasattr(e,"reason"):
             print(e.reason)
-    return  html
+    return html
 
 
-def getData(url,zhaopin,filepath,citys,jobs,cityIds):
-    for k in range(3,4):#0-4
-        for j in range(0,6):    #表示不同地区的网址0-6
-            for i in range(0,10):    #表示不同页数0-10
-                urls = url + 'key=' + jobs[k] + '&dqs=' + cityIds[j] + '&curPage=' + str(i)
-                # print(urls)
-                html = askurl(urls)
-                # print(html)
-                soup = BeautifulSoup(html,"html.parser")
-                for item in soup.find_all('div',class_="job-info"):
-                    # print(item)
-                    item = str(item)    #findall函数只能用字符串
-                    wz = re.findall(joblink,item)
-                    wz = wz[0].replace("[,',]", "")  # 去掉括号和双引号
-                    wz = str(wz)    #将网址改成字符串用来匹配和存入列表
-                    if wz.find("https") != -1:   #将不符合规则的网址加上前缀存入
-                        zhaopin.append(wz)
-                    time.sleep(0.2)
-                    # print(wz)
-            require = []
-            saveData(zhaopin,filepath)
-            require = findask(zhaopin, require)  # 寻找招聘要求
-            clean(require)  # 清洗数据
-            creatwordcloud(citys[j])  # 生成词云
-            zhaopin = []
-            time.sleep(2)
+#筛选出网页的网址
+def getData(urls,jobs,city):
+    zhaopin = []
+    for i in range(0, 1):  # 表示不同页数0-10
+        urls = urls + '&curPage=' + str(i)
+        html = askurl(urls)  # 将生成的网址传到askurl获取网页信息
+        print(html)
+        soup = BeautifulSoup(html,"html.parser")
+        for item in soup.find_all('div',class_="job-info"):
+            #print(item)
+            item = str(item)    #findall函数只能用字符串
+            wz = re.findall(joblink,item)
+            wz = wz[0].replace("[,',]", "")  # 去掉括号和双引号
+            wz = str(wz)    #将网址改成字符串用来匹配和存入列表
+            if wz.find("https") == -1:   #将不符合规则的网址加上前缀存入
+                wz = 'http://www.liepin.com/' + wz
+                zhaopin.append(wz)
+            else:
+                zhaopin.append(wz)
+            time.sleep(0.2)
+            #print(wz)
+    # require = []
+    saveData(zhaopin)   #保存网址到zhaopin.txt
+    findask(zhaopin)    #寻找招聘要求
+    creatwordcloud(jobs,city)  # 生成词云
 
 
-    return zhaopin
 
 #保存招聘网址
-def saveData(zhaopin,filepath):
+def saveData(zhaopin):
+    filepath = "zhaopin.txt"
     f = open(filepath,"w")
     for i in range(len(zhaopin)):
         f.write(zhaopin[i]+'\n')
     f.close()
 
 
-def findask(zhaopin,require):
+def findask(zhaopin):
+    require = []
     f = open("ask.txt","w")
     for i in range(len(zhaopin)):
-        url = zhaopin[i]
-        html = askurl(url)
+        urls = zhaopin[i]
+        html = askurl(urls)
         #print(html)
         soup = BeautifulSoup(html,"html.parser")
         for item in soup.find_all('div',class_="job-item main-message job-description"):
@@ -112,7 +116,8 @@ def findask(zhaopin,require):
             f.write('\n')
             require.append(ask)
     f.close()
-    return require
+
+    clean(require)#清洗数据
 
 def clean(require):
     f = open("last.txt","w")
@@ -133,15 +138,16 @@ def clean(require):
 
     #f1.close()
 
-def creatwordcloud(city):
+def creatwordcloud(jobs,city):
     f = open("last.txt","r").read()
+
     # 筛选TF-IDF
     keywords = jieba.analyse.extract_tags(f, topK=100, withWeight=False)
     keywords = str(keywords)
     keywords = re.sub("[\[\]\']","",keywords)
 
     #用关键词生成词云
-    img = Image.open('timg.jpg')
+    img = Image.open('底布.png')
     img_array = np.array(img)
     font_path = "C:\Windows\Fonts\simfang.ttf"
     cloud = WordCloud(font_path = font_path,
@@ -152,8 +158,7 @@ def creatwordcloud(city):
     fig = plt.figure(1)
     plt.imshow(cloud)
     plt.axis
-    print("互联网产品经理%s地区的云图已经生成"%city)
-    cloud.to_file('互联网产品经理%s.jpg'%city)
+    cloud.to_file('%s%s.jpg'%(jobs,city))
 
 if __name__ == '__main__':
     main()
